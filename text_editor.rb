@@ -1,6 +1,6 @@
 class TextEditor
   def initialize
-    @save_file = "text_editor_save.txt"
+#    @save_file = "text_editor_save.txt"
     @text = []
     run
   end
@@ -11,10 +11,8 @@ class TextEditor
     greet
     prompt_load
 
-    puts
     puts 'Type "quit" to stop entering text.'
     puts
-
     loop do
       line = gets.chomp
       break if line == "quit"
@@ -28,12 +26,12 @@ class TextEditor
 
   def greet
     greeting = %q(
-     _____  _     _____    _____ _______   _______ 
+     _____  _     _____    _____ _______   _______
     /  __ \| |   |_   _|  |_   _|  ___\ \ / /_   _|
-    | /  \/| |     | |      | | | |__  \ V /  | |  
-    | |    | |     | |      | | |  __| /   \  | |  
-    | \__/\| |_____| |_     | | | |___/ /^\ \ | |  
-     \____/\_____/\___/     \_/ \____/\/   \/ \_/ 
+    | /  \/| |     | |      | | | |__  \ V /  | |
+    | |    | |     | |      | | |  __| /   \  | |
+    | \__/\| |_____| |_     | | | |___/ /^\ \ | |
+     \____/\_____/\___/     \_/ \____/\/   \/ \_/
     )
 
     puts greeting
@@ -44,39 +42,46 @@ class TextEditor
     input = nil
     until input == "N" || input == "L"
       puts "Would you like to start a (N)ew file or (L)oad an existing file?"
-      puts
       input = gets.chomp.upcase
     end
 
     load if input == "L"
+    write if input == "N"
   end
 
   def load
-    if File.exist?(@save_file)
-      file = File.open(@save_file, "r")
+    puts "File name?"
+    @file_name = gets.chomp
+    if File.exist?(@file_name)
+      file = File.open(@file_name, "r")
       file.each_line {|line| @text << line}
+      print
     else
-      puts "No saved file exists. Starting new file."
+      puts "No saved file exists. Would you like to create it?"
+      write
     end
     puts
   end
-
-  def print
+  def write
+    puts "File name?"
+    @file_name = gets.chomp
+    file = File.open(@file_name, "w")
     puts
-    puts "You wrote:"
+    load
+  end
+  def print
+    puts "file: #{@file_name}:"
     @text.each_with_index {|sentence, line| puts "#{line+1} #{sentence}"}
     puts
   end
 
   def prompt_edit
     puts "Would you like to edit a line? (Y/N)"
-    puts
     response = gets.chomp.upcase
 
     if response == "Y"
       line = nil
       until (1..@text.length).include? line
-        puts
         puts "Which line would you like to edit?"
         line = gets.chomp.to_i
       end
@@ -86,7 +91,6 @@ class TextEditor
   end
 
   def edit(line)
-    puts
     puts "Was:"
     puts @text[line-1]
     puts
@@ -107,7 +111,7 @@ class TextEditor
   end
 
   def save
-    file = File.open(@save_file, "w")
+    file = File.open(@file_name, "w")
     file.puts(@text)
   end
 end
